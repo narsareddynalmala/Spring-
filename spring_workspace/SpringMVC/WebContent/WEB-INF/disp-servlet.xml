@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+	                    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+	<context:annotation-config />
+	<!-- Explicit wiring -->
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/mypool" />
+	</bean>
+
+	<bean class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.use_sql_comments">true</prop>
+				<prop key="hibernate.transaction.factory_class">
+					org.hibernate.transaction.JDBCTransactionFactory
+				</prop>
+			</props>
+		</property>
+		<property name="mappingResources">
+			<array>
+				<value>Customer.hbm.xml</value>
+			</array>
+		</property>
+	</bean>
+
+	<bean class="org.springframework.orm.hibernate3.HibernateTemplate"
+		autowire="byType" />
+		
+	<!-- Annotation based wiring -->
+	<bean name="/nc.htm" class="edu.aspire.controllers.NewCustomerController" />
+
+	<!-- The below handler mapping is default -->
+	<bean
+		class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />
+
+	<!-- Resolving Internal views -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.InternalResourceView" />
+		<!-- <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/> -->
+	</bean>
+</beans>
